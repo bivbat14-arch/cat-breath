@@ -6,180 +6,94 @@
   <title>Трекер Дыхания Кота</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background-color: #121212;
-      color: #ffffff;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+      margin: 0; padding: 0; background-color: #121212; color: #ffffff;
+      font-family: sans-serif; display: flex; flex-direction: column;
+      height: 100vh; overflow: hidden;
     }
-
-    /* Основные экраны */
     .screen {
-      flex: 1;
-      display: none; /* Скрыты по умолчанию */
-      position: relative;
-      height: calc(100vh - 60px);
-      overflow-y: auto;
+      flex: 1; display: none; position: relative;
+      height: calc(100vh - 60px); overflow-y: auto;
     }
-    .screen.active {
-      display: block; /* Показываем активный экран */
-    }
-
-    /* Навигация */
+    .screen.active { display: block; }
     .nav-bar {
-      display: flex;
-      background-color: #1e1e1e;
-      border-top: 1px solid #333;
-      height: 60px;
+      display: flex; background-color: #1e1e1e; border-top: 1px solid #333; height: 60px;
     }
     .nav-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #888;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
+      flex: 1; background: transparent; border: none; color: #888;
+      font-size: 16px; font-weight: bold; cursor: pointer;
     }
-    .nav-btn.active {
-      color: #00C851;
-    }
+    .nav-btn.active { color: #00C851; }
 
-    /* Стили Сканера */
     #video-container {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #000;
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #000;
     }
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    video { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* УВЕЛИЧЕННЫЙ КВАДРАТ (было 100px, стало 250px) */
     #target-box {
-      position: absolute;
-      top: 50%; left: 50%;
+      position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 100px; height: 100px;
-      border: 3px solid #00ff00;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-      pointer-events: none;
+      width: 250px; height: 250px;
+      border: 3px solid #00ff00; border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); pointer-events: none;
     }
+    
     .controls {
-      position: absolute;
-      bottom: 0; width: 100%; padding: 20px;
+      position: absolute; bottom: 0; width: 100%; padding: 20px;
       background: linear-gradient(transparent, rgba(0,0,0,0.9));
-      text-align: center;
-      box-sizing: border-box;
+      text-align: center; box-sizing: border-box;
     }
-    .time-selectors {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+    .time-selectors { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
     .time-btn {
-      padding: 8px 20px;
-      border-radius: 20px;
-      border: 1px solid #00C851;
-      background: transparent;
-      color: #00C851;
-      font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
+      padding: 8px 20px; border-radius: 20px; border: 1px solid #00C851;
+      background: transparent; color: #00C851; font-weight: bold; font-size: 14px;
     }
-    .time-btn.selected {
-      background: #00C851;
-      color: #000;
-    }
-    .time-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .time-btn.selected { background: #00C851; color: #000; }
+    .time-btn:disabled { opacity: 0.5; }
     #action-btn {
-      padding: 15px 40px;
-      font-size: 18px;
-      background-color: #00C851;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      font-weight: bold;
-      width: 100%;
-      max-width: 300px;
-      cursor: pointer;
+      padding: 15px 40px; font-size: 18px; background-color: #00C851;
+      color: white; border: none; border-radius: 30px; font-weight: bold;
+      width: 100%; max-width: 300px;
     }
-    #action-btn.stop {
-      background-color: #ff4444;
-    }
+    #action-btn.stop { background-color: #ff4444; }
 
-    /* Стили Дневника */
-    .diary-content {
-      padding: 20px;
-      box-sizing: border-box;
-    }
+    .diary-content { padding: 20px; box-sizing: border-box; }
     .chart-container {
-      background-color: #1e1e1e;
-      border-radius: 15px;
-      padding: 15px;
-      margin-bottom: 20px;
-      height: 150px;
-      position: relative;
+      background-color: #1e1e1e; border-radius: 15px; padding: 15px;
+      margin-bottom: 20px; height: 150px; position: relative;
     }
     .history-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #1e1e1e;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 10px;
     }
-    .clear-btn {
-      background: none;
-      color: #ff4444;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
-    }
+    .clear-btn { background: none; color: #ff4444; border: none; font-size: 14px; }
   </style>
 </head>
 <body>
 
-  <!-- Экран: Сканер -->
   <div id="scanner-screen" class="screen active">
     <div id="video-container">
       <video id="videoElement" autoplay playsinline muted></video>
       <div id="target-box"></div>
       <canvas id="hiddenCanvas" style="display: none;"></canvas>
-      
       <div class="controls">
         <h2 id="bpm-display" style="margin: 0 0 5px 0; font-size: 32px;">--</h2>
         <p id="status-text" style="margin: 0 0 15px 0; font-size: 14px; color: #ddd;">Нажмите "Начать" и наведите на кота</p>
-        
         <div class="time-selectors">
           <button class="time-btn selected" id="btn-15s" onclick="setDuration(15000)">15 сек</button>
           <button class="time-btn" id="btn-60s" onclick="setDuration(60000)">1 минута</button>
         </div>
-
         <button id="action-btn" onclick="toggleTracking()">НАЧАТЬ ЗАМЕР</button>
       </div>
     </div>
   </div>
 
-  <!-- Экран: Дневник -->
   <div id="diary-screen" class="screen">
     <div class="diary-content">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">Дневник ЧДД</h2>
         <button class="clear-btn" onclick="clearHistory()">Очистить</button>
       </div>
-
       <div class="chart-container">
         <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #aaa;">Динамика дыхания</h3>
         <svg id="chart-svg" viewBox="0 0 300 100" preserveAspectRatio="none" style="width: 100%; height: 80%; overflow: visible;">
@@ -188,20 +102,17 @@
         </svg>
         <div id="chart-empty" style="display: none; text-align: center; color: #555; margin-top: 30px;">Нет данных</div>
       </div>
-
       <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #aaa;">История замеров</h3>
       <div id="history-list"></div>
     </div>
   </div>
 
-  <!-- Навигация -->
   <div class="nav-bar">
     <button class="nav-btn active" id="nav-scanner" onclick="switchTab('scanner')">📷 Сканер</button>
     <button class="nav-btn" id="nav-diary" onclick="switchTab('diary')">📓 Дневник</button>
   </div>
 
   <script>
-    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     let isTracking = false;
     let durationMs = 15000;
     let dataLog = [];
@@ -209,7 +120,6 @@
     let animationFrameId = null;
     let stream = null;
 
-    // DOM Элементы
     const video = document.getElementById('videoElement');
     const canvas = document.getElementById('hiddenCanvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -219,7 +129,6 @@
     const btn15s = document.getElementById('btn-15s');
     const btn60s = document.getElementById('btn-60s');
 
-    // --- НАВИГАЦИЯ ---
     function switchTab(tabName) {
       document.getElementById('scanner-screen').classList.remove('active');
       document.getElementById('diary-screen').classList.remove('active');
@@ -238,7 +147,6 @@
       }
     }
 
-    // --- КАМЕРА И СКАНЕР ---
     async function startCamera() {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -251,10 +159,8 @@
     }
 
     function stopCamera() {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-      if (isTracking) toggleTracking(); // Остановить замер если переключили вкладку
+      if (stream) stream.getTracks().forEach(track => track.stop());
+      if (isTracking) toggleTracking();
     }
 
     function setDuration(ms) {
@@ -266,7 +172,6 @@
 
     function toggleTracking() {
       if (isTracking) {
-        // Остановка
         isTracking = false;
         cancelAnimationFrame(animationFrameId);
         actionBtn.innerText = 'НАЧАТЬ ЗАМЕР';
@@ -275,7 +180,6 @@
         btn15s.disabled = false;
         btn60s.disabled = false;
       } else {
-        // Старт
         dataLog = [];
         startTime = Date.now();
         isTracking = true;
@@ -298,7 +202,9 @@
       }
 
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const boxSize = 100;
+      
+      // УВЕЛИЧЕННЫЙ КВАДРАТ (синхронизировано с CSS)
+      const boxSize = 250; 
       const startX = (canvas.width - boxSize) / 2;
       const startY = (canvas.height - boxSize) / 2;
       
@@ -315,7 +221,6 @@
         calculateBPM();
         return;
       }
-
       animationFrameId = requestAnimationFrame(processFrame);
     }
 
@@ -339,7 +244,9 @@
           for(let k=startMean; k<endMean; k++) localSum += smoothed[k];
           let localMean = localSum / (endMean - startMean);
           
-          if (smoothed[i] > localMean * 1.01) peaks++;
+          // ПОВЫШЕННАЯ ЧУВСТВИТЕЛЬНОСТЬ:
+          // Было 1.01 (1% изменения), стало 1.002 (0.2% изменения)
+          if (smoothed[i] > localMean * 1.002) peaks++;
         }
       }
 
@@ -350,10 +257,9 @@
       statusText.innerText = 'Замер сохранен в дневник.';
       
       saveMeasurement(finalBpm);
-      toggleTracking(); // Сброс UI кнопки
+      toggleTracking(); 
     }
 
-    // --- ДНЕВНИК И ХРАНЕНИЕ ---
     function saveMeasurement(bpmVal) {
       if (bpmVal <= 0) return;
       const history = JSON.parse(localStorage.getItem('catBreathHistory') || '[]');
@@ -385,7 +291,6 @@
       const emptyMsg = document.getElementById('chart-empty');
       const chartSvg = document.getElementById('chart-svg');
 
-      // Отрисовка списка
       listContainer.innerHTML = '';
       if (history.length === 0) {
         listContainer.innerHTML = '<p style="text-align:center; color:#555;">Нет замеров</p>';
@@ -412,7 +317,6 @@
         `;
       });
 
-      // Отрисовка графика (реверс для хронологии слева направо)
       const chartData = [...history].reverse();
       const bpms = chartData.map(d => d.bpm);
       const maxBpm = Math.max(...bpms, 40);
@@ -437,10 +341,7 @@
       svgDots.innerHTML = dotsHtml;
     }
 
-    // Инициализация при загрузке
-    window.onload = () => {
-      startCamera();
-    };
+    window.onload = () => { startCamera(); };
   </script>
 </body>
 </html>
